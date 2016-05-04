@@ -10,6 +10,10 @@ Initiates the deployment in Appveyor CI tool
 ### Chef
 - Chef 11+
 
+## Recipes
+### Default
+Installs the required gems. `include_recipe` the default, to ensure the required gems are installed on the chef-client
+
 ## Resources and Providers
 ### `appveyorapi_deploy`
 The `appveyorapi_deploy` LWRP can be used to start the deployment for the specified environment in Appveyor CI using its API.
