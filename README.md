@@ -1,20 +1,18 @@
-# appveyorapi Cookbook
+# AppVeyor Cookbook
 
-Initiates the deployment in Appveyor CI tool
+This cookbook
+- Installs the [AppVeyor deployment agent](https://www.appveyor.com/docs/deployment/agent#installing-appveyor-deployment-agent)
+- [Triggers a deployment](https://www.appveyor.com/docs/api/environments-deployments#start-deployment) from the Appveyor API
 
 ## Requirements
-### Gems
-- json
-- HTTParty
-
 ### Chef
-- Chef 11+
+- Chef 12.6
 
 ## Recipes
 ### Default
 Installs the required gems. `include_recipe` the default, to ensure the required gems are installed on the chef-client
 
-## Resources and Providers
+## Resources
 ### `appveyorapi_deploy`
 The `appveyorapi_deploy` LWRP can be used to start the deployment for the specified environment in Appveyor CI using its API.
 
@@ -27,9 +25,9 @@ appveyorapi_deploy 'project-production' do
 end
 ```
 
-#### Attributes
-- `name` - Environment name in Appveyor. It could be any Environment like Agent, FTP, Azure, etc.,
-- `account` - Account which has privilege to start the deployment in Appveyor
-- `api_token` - API token for the service account in Appveyor
-- `project` - Name of the build project in the Appveyor to be deployed in the specified environment
-- `buildversion` - (optional) Build version of the project to be deployed in the specified environment. If it is not specified, cookbook will deploy the latest build for that project
+```ruby
+appveyor_agent '3.12.0' do
+  environment_access_key '1234abcd890432kj'
+  deployment_group 'test'
+end
+```
