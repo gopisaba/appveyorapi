@@ -1,6 +1,7 @@
 source 'https://supermarket.chef.io'
 
-cookbook 'appveyor-deploy-latest', path: 'test/fixtures/cookbooks/appveyor/deploy-latest'
-cookbook 'appveyor-deploy-3-12-0', path: 'test/fixtures/cookbooks/appveyor/deploy-3-12-0'
+cookbook 'appveyor-agent-latest', path: 'test/fixtures/cookbooks/appveyor/agent-latest'
+cookbook 'appveyor-agent-3-12-0', path: 'test/fixtures/cookbooks/appveyor/agent-3-12-0'
+cookbook 'appveyor-deploy',       path: 'test/fixtures/cookbooks/appveyor/deploy'
 
 metadata

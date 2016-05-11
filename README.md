@@ -13,6 +13,7 @@ This cookbook
 Installs the required gems. `include_recipe` the default, to ensure the required gems are installed on the chef-client
 
 ## Resources
+### Deploy
 ### `appveyorapi_deploy`
 The `appveyorapi_deploy` LWRP can be used to start the deployment for the specified environment in Appveyor CI using its API.
 
@@ -25,6 +26,7 @@ appveyorapi_deploy 'project-production' do
 end
 ```
 
+### Agent Install
 ```ruby
 appveyor_agent '3.12.0' do
   environment_access_key '1234abcd890432kj'

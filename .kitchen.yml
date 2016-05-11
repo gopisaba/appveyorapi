@@ -11,8 +11,13 @@ platforms:
       instance_type: t2.medium
 
 suites:
-  - name: appveyor-deploy-3-12-0
+  - name: appveyor-agent-3-12-0
     run_list:
-      - recipe[appveyor-deploy-3-12-0::default]
+      - recipe[appveyor-agent-3-12-0::default]
     attributes:
-      access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>
+      environment_access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>
+  - name: appveyor-agent-latest
+    run_list:
+      - recipe[appveyor-agent-latest::default]
+    attributes:
+      environment_access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>

@@ -34,13 +34,13 @@ action :create do
   end
 
   registry_key 'HKEY_LOCAL_MACHINE\\SOFTWARE\\AppVeyor\\DeploymentAgent' do
-		values [{
-			name: "DeploymentGroup", type: :string, data: deployment_group
-		}]
-		action :create
+    values [{
+      name: 'DeploymentGroup', type: :string, data: deployment_group
+    }]
+    action :create
   end
 
-	service 'Appveyor.DeploymentAgent' do
-		action :restart
-	end
+  service 'Appveyor.DeploymentAgent' do
+    action :restart
+  end
 end

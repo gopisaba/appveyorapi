@@ -16,109 +16,90 @@
 # # limitations under the License.
 # #
 #
-# actions :start
-# default_action :start
-#
-# attribute :name, name_attribute: true, kind_of: String, required: true
-# attribute :api_token, kind_of: String, required: true
-# attribute :account, kind_of: String, required: true
-# attribute :project, kind_of: String, required: true
-# attribute :buildversion, kind_of: String
-# attribute :buildjobid, kind_of: String
-# attribute :environmentvariables, kind_of: Hash
-#
-# attr_accessor :exists
-#
-# require 'HTTParty'
-# require 'chef/log'
-# require 'json'
-#
-# use_inline_resources
-#
-# action :start do
-#   converge_by("Start deployment") do
-#     if start_deploy == 200
-#       Chef::Log.info "Converged successfully"
-#     else
-#       Chef::Log.error "Failed to converge"
-#     end
-#   end
-# end
-#
-# def load_json
-#   body = '{
-#       "environmentName": "environmentName",
-#       "accountName": "serviceAccount",
-#       "projectSlug": "projectName",
-#       "buildVersion": "1.0.11"
-#   }'
-#   parsed = JSON.parse(body)
-#   parsed['environmentName'] = get_environment_by_name
-#   parsed['accountName'] = new_resource.account
-#   parsed['projectSlug'] = get_project_by_name
-#   if new_resource.buildversion.nil?
-#     parsed['buildVersion'] = get_build_latest_version
-#   else
-#     parsed['buildVersion'] = get_build_by_version
-#   end
-#   return parsed
-# end
-#
-# def start_deploy
-#   json = load_json
-#   response = HTTParty.post("https://ci.appveyor.com/api/deployments",
-#                           body: json.to_json,
-#                           headers: { 'Authorization' => "Bearer #{new_resource.api_token}",
-#                           'Content-Type' => 'application/json',
-#                           'Accept' => 'application/json' },
-#                           debug_output: $stdout)
-#   return response.code
-# end
-#
-# def get_build_by_version
-#   response = HTTParty.get("https://ci.appveyor.com/api/projects/#{new_resource.account}/#{new_resource.project}/build/#{new_resource.buildversion}",
-#                           headers: { 'Authorization' => "Bearer #{new_resource.api_token}" })
-#   if response.code == 200
-#     return response['build']['version']
-#   else
-#     raise "Build number #{new_resource.buildversion} not found"
-#   end
-# end
-#
-# def get_build_latest_version
-#   response = HTTParty.get("https://ci.appveyor.com/api/projects/#{new_resource.account}/#{new_resource.project}",
-#                           headers: { 'Authorization' => "Bearer #{new_resource.api_token}" })
-#   if response.code == 200
-#     return response['build']['version']
-#   else
-#     raise "Unable to find the latest Build number for the project #{new_resource.project}"
-#   end
-# end
-#
-# def get_project_by_name
-#   projects = HTTParty.get('https://ci.appveyor.com/api/projects',
-#                           headers: { 'Authorization' => "Bearer #{new_resource.api_token}" })
-#   response = false
-#   projects.each do |project|
-#     response = project['name'] == new_resource.project ? true : false
-#   end
-#   if response == true
-#     return new_resource.project
-#   else
-#     raise "Unable to find the project #{new_resource.project}"
-#   end
-# end
-#
-# def get_environment_by_name
-#   environments = HTTParty.get('https://ci.appveyor.com/api/environments',
-#                               headers: { 'Authorization' => "Bearer #{new_resource.api_token}" })
-#   response = false
-#   environments.each do |env|
-#     response = env['name'] == new_resource.name ? true : false
-#   end
-#   if response == true
-#     return new_resource.name
-#   else
-#     raise "Unable to find the environment #{new_resource.name}"
-#   end
-# end
+
+resource_name :appveyor_deploy
+property :environment_name, String, required: true
+property :project_slug, String, required: true # Find this from project URL
+property :account_name, String, required: true
+property :build_version, String, name_property: true
+property :api_token, String, required: true
+property :project_slug, String, required: true
+property :build_job_id, String
+property :environment_variables, Hash, required: true
+
+action :create do
+  require 'HTTParty'
+  require 'json'
+
+  def deploy_json
+    body = {
+      environmentName: environment_name,
+      accountName: account_name,
+      projectSlug: project_slug,
+      buildVersion: build_version
+    }
+    parsed = JSON.parse(body)
+    parsed['environmentName'] = environment_by_name
+    parsed['accountName'] = account
+    parsed['projectSlug'] = project_by_name
+    parsed['buildVersion'] = if buildversion.nil?
+                               build_latest_version
+                             else
+                               build_by_version
+                             end
+    parsed
+  end
+
+  def start_deploy
+    json = deploy_json
+    response = HTTParty.post('https://ci.appveyor.com/api/deployments',
+                             body: json.to_json,
+                             headers: { 'Authorization' => "Bearer #{api_token}",
+                                        'Content-Type' => 'application/json',
+                                        'Accept' => 'application/json' })
+    response.code
+  end
+
+  def build_by_version
+    response = HTTParty.get("https://ci.appveyor.com/api/projects/#{account}/#{project}/build/#{buildversion}",
+                            headers: { 'Authorization' => "Bearer #{api_token}" })
+    if response.code == 200
+      return response['build']['version']
+    else
+      raise "Build number #{buildversion} not found"
+    end
+  end
+
+  def build_latest_version
+    response = HTTParty.get("https://ci.appveyor.com/api/projects/#{account}/#{project}",
+                            headers: { 'Authorization' => "Bearer #{api_token}" })
+    begin
+      request.inspect
+    rescue
+      puts "Unable to find the latest Build number for the project #{project}"
+    end
+    response['build']['version']
+  end
+
+  def project_by_name(name)
+    projects = HTTParty.get('https://ci.appveyor.com/api/projects',
+                            headers: { 'Authorization' => "Bearer #{api_token}" })
+    projects.each do |project|
+      response = project['name']
+    end
+  end
+
+  def environment_by_name
+    environments = HTTParty.get('https://ci.appveyor.com/api/environments',
+                                headers: { 'Authorization' => "Bearer #{api_token}" })
+    response = false
+    environments.each do |env|
+      response = env['name'] == name ? true : false
+    end
+    if response == true
+      return name
+    else
+      raise "Unable to find the environment #{name}"
+    end
+  end
+end
