@@ -2,13 +2,12 @@
 
 appveyor_agent 'latest' do
   access_key node['environment_access_key']
-  deployment_group 'test'
+  deployment_group 'web'
 end
 
 appveyor_deploy '1.0.269' do
   api_token node['api_token']
-  environment_name
-  project_slug
-  account_name
-  environment_variables { blob.to_json }
+  environment_name 'psm-archive-production'
+  project_slug '8174'
+  account_name 'js-devops'
 end

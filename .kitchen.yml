@@ -21,3 +21,9 @@ suites:
       - recipe[appveyor-agent-latest::default]
     attributes:
       environment_access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>
+  - name: appveyor-deploy
+    run_list:
+      - recipe[appveyor-deploy::default]
+    attributes:
+      api_token: <%= ENV['API_TOKEN'] %>
+      environment_access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>

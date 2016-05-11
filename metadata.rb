@@ -7,5 +7,3 @@ long_description 'Trigger the deployment in the Appveyor CI using its API'
 version '0.1.0'
 
 depends 'windows'
-
-gem 'HTTParty'
