@@ -13,6 +13,17 @@ It does not install IIS or any other related services.
 ## Platform
 - Windows
 
+## Recipes
+### default  
+Installs the AppVeyor agent
+
+Set the following attributes:
+```
+node['environment_access_key']
+node['deployment_group']
+```
+
+For more examples see the test/fixtures directory 
 ## Resources
 ### Agent Install
 ```ruby
