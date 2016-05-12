@@ -24,33 +24,39 @@ property :build_version, String, name_property: true
 property :api_token, String, required: true
 property :project_slug, String, required: true
 
+require 'HTTParty'
+require 'json'
+require 'chef/log'
+
+
+
+def start_deploy(api_token)
+  body = {
+    environmentName: environment_name,
+    accountName: account_name,
+    projectSlug: project_slug,
+    buildVersion: build_version
+  }
+  response = HTTParty.post('https://ci.appveyor.com/api/deployments',
+                           body: body.to_json,
+                           headers: { 'Authorization' => "Bearer #{api_token}",
+                                      'Content-Type' => 'application/json',
+                                      'Accept' => 'application/json'
+                                      })
+
+end
 
 action :create do
-  # include Chef::DSL::
+  # load_current_value do
+  #   if File.exist?('/var/www/html/index.html')
+  #     homepage IO.read('/var/www/html/index.html')
+  #   end
+  #   if File.exist?('/var/www/html/404.html')
+  #     page_not_found IO.read('/var/www/html/404.html')
+  #   end
+  # end
   chef_gem 'httparty'
 
-  require 'HTTParty'
-  require 'json'
-  require 'chef/log'
+  start_deploy(api_token)
 
-  def deploy_body
-    body = {
-      environmentName: environment_name,
-      accountName: account_name,
-      projectSlug: project_slug,
-      buildVersion: build_version
-    }
-  end
-
-  def start_deploy(deploy_body, api_token)
-    response = HTTParty.post('https://ci.appveyor.com/api/deployments',
-                             body: deploy_body.to_json,
-                             headers: { 'Authorization' => "Bearer #{api_token}",
-                                        'Content-Type' => 'application/json',
-                                        'Accept' => 'application/json' })
-    Chef::Log.info response.code
-  end
-
-  body = deploy_body()
-  start_deploy(body, api_token)
 end

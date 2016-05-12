@@ -27,3 +27,6 @@ suites:
     attributes:
       api_token: <%= ENV['API_TOKEN'] %>
       environment_access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>
+      environment_name: <%= ENV['ENV_NAME'] %>
+      project_slug: <%= ENV['PROJECT_SLUG'] %>
+      account_name: <%= ENV['ACCOUNT_NAME'] %>
