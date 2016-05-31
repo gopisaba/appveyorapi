@@ -6,6 +6,8 @@ use_inline_resources
 
 action :start do
   converge_by("Start deployment") do
+    chef_gem 'json'
+    chef_gem 'HTTParty'
     if start_deploy == 200
       Chef::Log.info "Converged successfully"
     else
