@@ -32,4 +32,4 @@ end
 - `account` - Account which has privilege to start the deployment in Appveyor
 - `api_token` - API token for the service account in Appveyor
 - `project` - Name of the build project in the Appveyor to be deployed in the specified environment
-- `buildversion` - (optional) Build version of the project to be deployed in the specified environment. If it is not specified, cookbook will deploy the latest build for that project
+- `buildversion` - (optional) Build version of the project to be deployed in the specified environment. If it is not specified, cookbook will deploy the last successfully deployed build version. If you specify it as `latest` then it builds latest build for that project

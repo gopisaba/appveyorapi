@@ -51,22 +51,16 @@ action_class do
     response = HTTParty.get(
                  "#{$projectsapi}/#{account}/#{project}/build/#{buildversion}",
                  headers: { 'Authorization' => "Bearer #{api_token}" })
-    if response.code == 200
-      return response['build']['version']
-    else
-      raise "Build number #{buildversion} not found"
-    end
+    raise "Build number #{buildversion} not found" unless response.code == 200
+    response['build']['version']
   end
 
   def get_build_latest_version
     response = HTTParty.get(
                  "#{$projectsapi}/#{account}/#{project}",
                  headers: { 'Authorization' => "Bearer #{api_token}" })
-    if response.code == 200
-      return response['build']['version']
-    else
-      raise "Unable to find the latest Build number for the project #{project}"
-    end
+    raise "Unable to find the latest Build number" unless response.code == 200
+    response['build']['version']
   end
 
   def get_project_by_name
@@ -77,11 +71,8 @@ action_class do
     projects.each do |proj|
       response = proj['name'] == project ? true : false
     end
-    if response == true
-      return project
-    else
-      raise "Unable to find the project #{project}"
-    end
+    raise "Unable to find the project #{project}" unless response == true
+    project
   end
 
   def get_environment_by_name
@@ -92,11 +83,8 @@ action_class do
     environments.each do |env|
       response = env['name'] == name ? true : false
     end
-    if response == true
-      return name
-    else
-      raise "Unable to find the environment #{name}"
-    end
+    raise "Unable to find the environment #{name}" unless response == true
+    name
   end
 
   def get_build_by_deployments
@@ -116,7 +104,6 @@ action_class do
       end
     end
   end
-
 end
 
 action :start do
