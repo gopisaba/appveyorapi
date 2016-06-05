@@ -6,6 +6,8 @@ property :account, kind_of: String, required: true
 property :project, kind_of: String, required: true
 property :buildversion, kind_of: String
 
+default_action :start
+
 $projectsapi = 'https://ci.appveyor.com/api/projects'
 $environmentsapi = 'https://ci.appveyor.com/api/environments'
 $deploymentsapi = 'https://ci.appveyor.com/api/deployments'

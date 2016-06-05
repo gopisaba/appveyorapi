@@ -8,7 +8,7 @@ Initiates the deployment in Appveyor CI tool
 - HTTParty
 
 ### Chef
-- Chef 11+
+- Chef 12+
 
 ## Recipes
 ### Default
