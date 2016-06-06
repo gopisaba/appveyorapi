@@ -8,6 +8,7 @@ property :buildversion, kind_of: String
 
 default_action :start
 
+# rubocop:disable GlobalVars
 $projectsapi = 'https://ci.appveyor.com/api/projects'
 $environmentsapi = 'https://ci.appveyor.com/api/environments'
 $deploymentsapi = 'https://ci.appveyor.com/api/deployments'
@@ -22,12 +23,17 @@ action_class do
         "projectSlug": "projectName",
         "buildVersion": "1.0.11"
     }'
-    parsed = JSON.parse(body)
+    JSON.parse(body)
+  end
+
+  # rubocop:disable MethodLength
+  def add_value
+    parsed = load_json
     parsed['environmentName'] = env_by_name
     parsed['accountName'] = account
     parsed['projectSlug'] = project_by_name
     parsed['buildVersion'] = if buildversion.nil?
-                               build_by_deploy
+                               build_by_id
                              elsif buildversion == 'latest'
                                build_latest_version
                              else
@@ -35,9 +41,10 @@ action_class do
                              end
     parsed
   end
+  # rubocop:disable MethodLength
 
   def start_deploy
-    json = load_json
+    json = add_value
     response = HTTParty.post(
       $deploymentsapi,
       body: json.to_json,
@@ -108,6 +115,7 @@ action_class do
     end
   end
 end
+# rubocop:enable GlobalVars
 
 action :start do
   if start_deploy == 200
