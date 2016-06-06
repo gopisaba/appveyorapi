@@ -23,15 +23,15 @@ action_class do
         "buildVersion": "1.0.11"
     }'
     parsed = JSON.parse(body)
-    parsed['environmentName'] = get_environment_by_name
+    parsed['environmentName'] = env_by_name
     parsed['accountName'] = account
-    parsed['projectSlug'] = get_project_by_name
+    parsed['projectSlug'] = project_by_name
     parsed['buildVersion'] = if buildversion.nil?
-                               get_build_by_deployments
+                               build_by_deploy
                              elsif buildversion == 'latest'
-                               get_build_latest_version
+                               build_latest_version
                              else
-                               get_build_by_version
+                               build_by_version
                              end
     return parsed
   end
@@ -49,7 +49,7 @@ action_class do
     return response.code
   end
 
-  def get_build_by_version
+  def build_by_version
     response = HTTParty.get(
                  "#{$projectsapi}/#{account}/#{project}/build/#{buildversion}",
                  headers: { 'Authorization' => "Bearer #{api_token}" })
@@ -57,7 +57,7 @@ action_class do
     response['build']['version']
   end
 
-  def get_build_latest_version
+  def build_latest_version
     response = HTTParty.get(
                  "#{$projectsapi}/#{account}/#{project}",
                  headers: { 'Authorization' => "Bearer #{api_token}" })
@@ -65,7 +65,7 @@ action_class do
     response['build']['version']
   end
 
-  def get_project_by_name
+  def project_by_name
     projects = HTTParty.get(
                  $projectsapi,
                  headers: { 'Authorization' => "Bearer #{api_token}" })
@@ -77,7 +77,7 @@ action_class do
     project
   end
 
-  def get_environment_by_name
+  def env_by_name
     environments = HTTParty.get(
                      $environmentsapi,
                      headers: { 'Authorization' => "Bearer #{api_token}" })
@@ -89,10 +89,10 @@ action_class do
     name
   end
 
-  def get_build_by_deployments
+  def build_by_deploy
     environments = HTTParty.get(
                      $environmentsapi,
-                     headers: { 'Authorization' => "Bearer #{api_token}" }) if get_environment_by_name
+                     headers: { 'Authorization' => "Bearer #{api_token}" }) if env_by_name
     environments.each do |env|
       @envdepid = env['deploymentEnvironmentId']
     end
