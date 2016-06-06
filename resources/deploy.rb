@@ -8,6 +8,7 @@ property :buildversion, kind_of: String
 
 default_action :start
 
+# rubocop:disable GlobalVars
 $projectsapi = 'https://ci.appveyor.com/api/projects'
 $environmentsapi = 'https://ci.appveyor.com/api/environments'
 $deploymentsapi = 'https://ci.appveyor.com/api/deployments'
@@ -15,14 +16,18 @@ $deploymentsapi = 'https://ci.appveyor.com/api/deployments'
 action_class do
   require 'httparty'
   require 'json'
-  def load_json
+  def start_deploy_body
     body = '{
         "environmentName": "environmentName",
         "accountName": "serviceAccount",
         "projectSlug": "projectName",
         "buildVersion": "1.0.11"
     }'
-    parsed = JSON.parse(body)
+    JSON.parse(body)
+  end
+
+  def start_deploy_json
+    parsed = start_deploy_body
     parsed['environmentName'] = env_by_name
     parsed['accountName'] = account
     parsed['projectSlug'] = project_by_name
@@ -33,42 +38,42 @@ action_class do
                              else
                                build_by_version
                              end
-    return parsed
+    parsed
   end
 
   def start_deploy
-    json = load_json
+    json = start_deploy_json
     response = HTTParty.post(
-                 $deploymentsapi,
-                 body: json.to_json,
-                 headers: {
-                   'Authorization' => "Bearer #{api_token}",
-                   'Content-Type' => 'application/json',
-                   'Accept' => 'application/json' },
-                 debug_output: $stdout)
-    return response.code
+      $deploymentsapi,
+      body: json.to_json,
+      headers: {
+        'Authorization' => "Bearer #{api_token}",
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json' },
+      debug_output: $stdout)
+    response.code
   end
 
   def build_by_version
     response = HTTParty.get(
-                 "#{$projectsapi}/#{account}/#{project}/build/#{buildversion}",
-                 headers: { 'Authorization' => "Bearer #{api_token}" })
+      "#{$projectsapi}/#{account}/#{project}/build/#{buildversion}",
+      headers: { 'Authorization' => "Bearer #{api_token}" })
     raise "Build number #{buildversion} not found" unless response.code == 200
     response['build']['version']
   end
 
   def build_latest_version
     response = HTTParty.get(
-                 "#{$projectsapi}/#{account}/#{project}",
-                 headers: { 'Authorization' => "Bearer #{api_token}" })
-    raise "Unable to find the latest Build number" unless response.code == 200
+      "#{$projectsapi}/#{account}/#{project}",
+      headers: { 'Authorization' => "Bearer #{api_token}" })
+    raise 'Unable to find the latest Build number' unless response.code == 200
     response['build']['version']
   end
 
   def project_by_name
     projects = HTTParty.get(
-                 $projectsapi,
-                 headers: { 'Authorization' => "Bearer #{api_token}" })
+      $projectsapi,
+      headers: { 'Authorization' => "Bearer #{api_token}" })
     response = false
     projects.each do |proj|
       response = proj['name'] == project ? true : false
@@ -79,8 +84,8 @@ action_class do
 
   def env_by_name
     environments = HTTParty.get(
-                     $environmentsapi,
-                     headers: { 'Authorization' => "Bearer #{api_token}" })
+      $environmentsapi,
+      headers: { 'Authorization' => "Bearer #{api_token}" })
     response = false
     environments.each do |env|
       response = env['name'] == name ? true : false
@@ -89,29 +94,32 @@ action_class do
     name
   end
 
-  def build_by_deploy
+  def env_id
     environments = HTTParty.get(
-                     $environmentsapi,
-                     headers: { 'Authorization' => "Bearer #{api_token}" }) if env_by_name
+      $environmentsapi,
+      headers: { 'Authorization' => "Bearer #{api_token}" }) if env_by_name
     environments.each do |env|
-      @envdepid = env['deploymentEnvironmentId']
+      return env['deploymentEnvironmentId']
     end
+  end
+
+  def build_by_deploy
     envdeployments = HTTParty.get(
-                       "#{$environmentsapi}/#{@envdepid}/deployments",
-                       headers: { 'Authorization' => "Bearer #{api_token}" })
+      "#{$environmentsapi}/#{env_id}/deployments",
+      headers: { 'Authorization' => "Bearer #{api_token}" })
     envdeployments['deployments'].each do |d|
       if d['deployment']['build']['status'] == 'success'
-        return buildnumber = d['deployment']['build']['version']
-        exit
+        return d['deployment']['build']['version']
       end
     end
   end
 end
+# rubocop:enable GlobalVars
 
 action :start do
   if start_deploy == 200
-    Chef::Log.info "Converged successfully"
+    Chef::Log.info 'Converged successfully'
   else
-    Chef::Log.error "Failed to converge"
+    Chef::Log.error 'Failed to converge'
   end
 end
