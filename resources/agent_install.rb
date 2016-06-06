@@ -2,7 +2,7 @@
 # Cookbook Name:: appveyor-agent
 # Resource:: agent
 #
-# Copyright (C) 2016 J Sainsburys PLC
+# Copyright (C) 2016
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,10 +24,12 @@ property :deployment_group, required: true
 property :installer_url, String, default: lazy { "http://www.appveyor.com/downloads/deployment-agent/#{version}/AppveyorDeploymentAgent.msi" }
 property :install_path, String, default: lazy { 'C:\\Program Files (x86)\\AppVeyor\\DeploymentAgent\\Appveyor.DeploymentAgent.Service.exe' }
 
+default_action :create
+
 action :create do
   include_recipe 'windows'
 
-  package 'AppveyorDeploymentAgent' do
+  windows_package 'AppveyorDeploymentAgent' do
     source installer_url
     installer_type :msi
     options "/quiet /qn /norestart /log install.log ENVIRONMENT_ACCESS_KEY=#{access_key}"
