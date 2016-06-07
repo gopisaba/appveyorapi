@@ -11,7 +11,4 @@ issues_url 'https://github.com/gopisaba/appveyorapi/issues' if
 
 supports 'windows'
 
-gem 'json'
-gem 'httparty'
-
 depends 'windows'
