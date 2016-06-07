@@ -137,6 +137,7 @@ end
 # rubocop:enable GlobalVars
 
 action :start do
+  chef_gem 'httparty'
   if start_deploy == 200
     Chef::Log.info 'Converged successfully'
   else
