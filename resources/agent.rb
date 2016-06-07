@@ -32,7 +32,7 @@ action :install do
     source installer_url
     installer_type :msi
     options "/quiet /qn /norestart /log install.log ENVIRONMENT_ACCESS_KEY=#{access_key}"
-    not_if File.exist?(:install_path)
+    not_if { ::File.exist?(install_path) }
   end
 
   registry_key 'HKEY_LOCAL_MACHINE\\SOFTWARE\\AppVeyor\\DeploymentAgent' do

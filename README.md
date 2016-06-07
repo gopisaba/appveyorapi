@@ -23,6 +23,16 @@ node['deployment_group']
 For more examples see the test/fixtures directory
 
 ## Resources and Providers
+### Agent Install
+```ruby
+appveyor_agent '3.12.0' do
+  environment_access_key '1234abcd890432kj'
+  deployment_group 'test'
+end
+```
+#### Attributes
+- `version` - Appveyor deployment agent version
+
 ### Start Deployment
 The `appveyorapi_deploy` LWRP can be used to start the deployment for the specified environment in Appveyor CI using its API.
 
@@ -41,11 +51,3 @@ end
 - `api_token` - API token for the service account in Appveyor.
 - `project` - Name of the build project in the Appveyor to be deployed in the specified environment.
 - `buildversion` - (optional) Build version of the project to be deployed in the specified environment. If it is not specified, cookbook will deploy the last successfully deployed build version. If you specify it as `latest` then it builds latest build for that project.
-
-### Agent Install
-```ruby
-appveyor_agent '3.12.0' do
-  environment_access_key '1234abcd890432kj'
-  deployment_group 'test'
-end
-```
