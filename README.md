@@ -31,7 +31,9 @@ appveyor_agent '3.12.0' do
 end
 ```
 #### Attributes
-- `version` - Appveyor deployment agent version
+- `version` - Specify the Appveyor deployment agent version to be installed like `3.12.0` or say it as `latest`
+- `environment_access_key` - Environment Access Key is a secure string used to pair Deployment agent. Specify the Appveyor environment access key.
+- `deployment_group` - Deployment group allows matching only specific group of Deployment Agents. Specify the Appveyor deployment group name. 
 
 ### Start Deployment
 The `appveyorapi_deploy` LWRP can be used to start the deployment for the specified environment in Appveyor CI using its API.
