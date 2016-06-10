@@ -33,7 +33,7 @@ end
 #### Attributes
 - `version` - Specify the Appveyor deployment agent version to be installed like `3.12.0` or say it as `latest`
 - `environment_access_key` - Environment Access Key is a secure string used to pair Deployment agent. Specify the Appveyor environment access key.
-- `deployment_group` - Deployment group allows matching only specific group of Deployment Agents. Specify the Appveyor deployment group name. 
+- `deployment_group` - Deployment group allows matching only specific group of Deployment Agents. Specify the Appveyor deployment group name.
 
 ### Start Deployment
 The `appveyorapi_deploy` LWRP can be used to start the deployment for the specified environment in Appveyor CI using its API.
@@ -48,8 +48,8 @@ end
 ```
 
 #### Attributes
-- `name` - Environment name in Appveyor. It could be any Environment like Agent, FTP, Azure, etc.,
+- `name` - Environment name in Appveyor(Case sensitive). It could be any Environment like Agent, FTP, Azure, etc.,
 - `account` - Account which has privilege to start the deployment in Appveyor.
 - `api_token` - API token for the service account in Appveyor.
-- `project` - Name of the build project in the Appveyor to be deployed in the specified environment.
+- `project` - Name of the build project in the Appveyor to be deployed in the specified environment(Case sensitive).
 - `buildversion` - (optional) Build version of the project to be deployed in the specified environment. If it is not specified, cookbook will deploy the last successfully deployed build version. If you specify it as `latest` then it builds latest build for that project.
