@@ -59,6 +59,19 @@ action_class do
   end
   # rubocop:enable MethodLength
 
+  def resp(code)
+    case code
+    when 200 then :Ok
+    when 400 then :BadRequest
+    when 401 then :Unauthorized
+    when 403 then :Forbidden
+    when 404 then :NotFound
+    when 405 then :MethodNotAllowed
+    when 408 then :RequestTimedOut
+    else :UnknownError
+    end
+  end
+
   def start_deploy
     json = start_deploy_json
     response = HTTParty.post(
@@ -95,8 +108,9 @@ action_class do
     response = false
     projects.each do |proj|
       response = true if proj['name'] == project
-    end
-    raise "Unable to find the project #{project}" unless response == true
+    end if projects.code == 200
+    raise "Unable to find the project #{project}\
+      - #{resp(project.code)}" unless response == true
     project
   end
 
@@ -107,8 +121,9 @@ action_class do
     response = false
     environments.each do |env|
       response = true if env['name'] == name
-    end
-    raise "Unable to find the environment #{name}" unless response == true
+    end if environments.code == 200
+    raise "Unable to find the environment #{name}\
+      - #{resp(environments.code)}" unless response == true
     name
   end
 
@@ -118,7 +133,9 @@ action_class do
       headers: { 'Authorization' => "Bearer #{api_token}" }) if env_by_name
     environments.each do |env|
       return env['deploymentEnvironmentId'] if env['name'] == name
-    end
+    end if environments.code = 200
+    raise "Unable to find the environment id #{name}\
+      - #{resp(environments.code)}" unless environments.code == 200
   end
 
   def build_by_deploy
@@ -129,7 +146,9 @@ action_class do
       if d['deployment']['build']['status'] == 'success'
         return d['deployment']['build']['version']
       end
-    end
+    end if envdeployments.code == 200
+    raise "Unable to find the environment for #{env_id}\
+      - #{resp(envdeployments.code)}" unless envdeployments.code == 200
   end
 end
 # rubocop:enable GlobalVars
