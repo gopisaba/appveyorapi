@@ -21,17 +21,24 @@ resource_name :appveyor_deploy
 property :name, name_attribute: true, kind_of: String, required: true
 property :api_token, kind_of: String, required: true
 property :account, kind_of: String, required: true
-property :project, kind_of: String, required: true
+property :project_slug, kind_of: String, required: true
 property :buildversion, kind_of: String
 
 default_action :start
 
-# rubocop:disable GlobalVars
-$projectsapi = 'https://ci.appveyor.com/api/projects'
-$environmentsapi = 'https://ci.appveyor.com/api/environments'
-$deploymentsapi = 'https://ci.appveyor.com/api/deployments'
-
 action_class do
+  def projectsapi
+    return 'https://ci.appveyor.com/api/projects'
+  end
+
+  def environmentsapi
+    return 'https://ci.appveyor.com/api/environments'
+  end
+
+  def deploymentsapi
+    return 'https://ci.appveyor.com/api/deployments'
+  end
+
   def start_deploy_body
     body = '{
         "environmentName": "environmentName",
@@ -75,7 +82,7 @@ action_class do
   def start_deploy
     json = start_deploy_json
     response = HTTParty.post(
-      $deploymentsapi,
+      deploymentsapi,
       body: json.to_json,
       headers: {
         'Authorization' => "Bearer #{api_token}",
@@ -87,7 +94,7 @@ action_class do
 
   def build_by_version
     response = HTTParty.get(
-      "#{$projectsapi}/#{account}/#{project}/build/#{buildversion}",
+      "#{projectsapi}/#{account}/#{project_slug}/build/#{buildversion}",
       headers: { 'Authorization' => "Bearer #{api_token}" })
     raise "Build number #{buildversion} not found" unless response.code == 200
     response['build']['version']
@@ -95,7 +102,7 @@ action_class do
 
   def build_latest_version
     response = HTTParty.get(
-      "#{$projectsapi}/#{account}/#{project}",
+      "#{projectsapi}/#{account}/#{project_slug}",
       headers: { 'Authorization' => "Bearer #{api_token}" })
     raise 'Unable to find the latest Build number' unless response.code == 200
     response['build']['version']
@@ -103,20 +110,20 @@ action_class do
 
   def project_by_name
     projects = HTTParty.get(
-      $projectsapi,
+      projectsapi,
       headers: { 'Authorization' => "Bearer #{api_token}" })
     response = false
     projects.each do |proj|
-      response = true if proj['name'] == project
+      response = true if proj['name'] == project_slug
     end if projects.code == 200
-    raise "Unable to find the project #{project}\
-      - #{resp(project.code)}" unless response == true
-    project
+    raise "Unable to find the project #{project_slug}\
+      - #{resp(project_slug.code)}" unless response == true
+    project_slug
   end
 
   def env_by_name
     environments = HTTParty.get(
-      $environmentsapi,
+      environmentsapi,
       headers: { 'Authorization' => "Bearer #{api_token}" })
     response = false
     environments.each do |env|
@@ -129,7 +136,7 @@ action_class do
 
   def env_id
     environments = HTTParty.get(
-      $environmentsapi,
+      environmentsapi,
       headers: { 'Authorization' => "Bearer #{api_token}" }) if env_by_name
     environments.each do |env|
       return env['deploymentEnvironmentId'] if env['name'] == name
@@ -140,7 +147,7 @@ action_class do
 
   def build_by_deploy
     envdeployments = HTTParty.get(
-      "#{$environmentsapi}/#{env_id}/deployments",
+      "#{environmentsapi}/#{env_id}/deployments",
       headers: { 'Authorization' => "Bearer #{api_token}" })
     envdeployments['deployments'].each do |d|
       if d['deployment']['build']['status'] == 'success'
@@ -151,7 +158,6 @@ action_class do
       - #{resp(envdeployments.code)}" unless envdeployments.code == 200
   end
 end
-# rubocop:enable GlobalVars
 
 action :start do
   chef_gem 'httparty'
