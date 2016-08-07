@@ -1,5 +1,8 @@
 # appveyorapi Cookbook
 
+[![Build status](https://ci.appveyor.com/api/projects/status/pjsvg21lu5knixg6?svg=true)]
+(https://ci.appveyor.com/project/Gopi/appveyorapi)
+
 Initiates the deployment in Appveyor CI tool
 
 ## Requirements
