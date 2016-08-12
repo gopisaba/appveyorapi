@@ -28,15 +28,15 @@ default_action :start
 
 action_class do
   def projectsapi
-    return 'https://ci.appveyor.com/api/projects'
+    'https://ci.appveyor.com/api/projects'
   end
 
   def environmentsapi
-    return 'https://ci.appveyor.com/api/environments'
+    'https://ci.appveyor.com/api/environments'
   end
 
   def deploymentsapi
-    return 'https://ci.appveyor.com/api/deployments'
+    'https://ci.appveyor.com/api/deployments'
   end
 
   def start_deploy_body
@@ -49,7 +49,6 @@ action_class do
     JSON.parse(body)
   end
 
-  # rubocop:disable MethodLength
   def start_deploy_json
     parsed = start_deploy_body
     parsed['environmentName'] = env_by_name
@@ -64,18 +63,14 @@ action_class do
                              end
     parsed
   end
-  # rubocop:enable MethodLength
 
   def resp(code)
     case code
-    when 200 then :Ok
-    when 400 then :BadRequest
-    when 401 then :Unauthorized
-    when 403 then :Forbidden
-    when 404 then :NotFound
-    when 405 then :MethodNotAllowed
-    when 408 then :RequestTimedOut
-    else :UnknownError
+    when 400 then return 'BadRequest'
+    when 401 then return 'Unauthorized'
+    when 403 then return 'Forbidden'
+    when 405 then return 'MethodNotAllowed'
+    else return 'UnknownError'
     end
   end
 
@@ -87,15 +82,18 @@ action_class do
       headers: {
         'Authorization' => "Bearer #{api_token}",
         'Content-Type' => 'application/json',
-        'Accept' => 'application/json' },
-      debug_output: $stdout)
+        'Accept' => 'application/json'
+      },
+      debug_output: $stdout
+    )
     response.code
   end
 
   def build_by_version
     response = HTTParty.get(
       "#{projectsapi}/#{account}/#{project_slug}/build/#{buildversion}",
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: { 'Authorization' => "Bearer #{api_token}" }
+    )
     raise "Build number #{buildversion} not found" unless response.code == 200
     response['build']['version']
   end
@@ -103,7 +101,8 @@ action_class do
   def build_latest_version
     response = HTTParty.get(
       "#{projectsapi}/#{account}/#{project_slug}",
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: { 'Authorization' => "Bearer #{api_token}" }
+    )
     raise 'Unable to find the latest Build number' unless response.code == 200
     response['build']['version']
   end
@@ -111,7 +110,8 @@ action_class do
   def project_by_name
     projects = HTTParty.get(
       projectsapi,
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: { 'Authorization' => "Bearer #{api_token}" }
+    )
     response = false
     projects.each do |proj|
       response = true if proj['name'] == project_slug
@@ -124,7 +124,8 @@ action_class do
   def env_by_name
     environments = HTTParty.get(
       environmentsapi,
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: { 'Authorization' => "Bearer #{api_token}" }
+    )
     response = false
     environments.each do |env|
       response = true if env['name'] == name
@@ -137,10 +138,11 @@ action_class do
   def env_id
     environments = HTTParty.get(
       environmentsapi,
-      headers: { 'Authorization' => "Bearer #{api_token}" }) if env_by_name
+      headers: { 'Authorization' => "Bearer #{api_token}" }
+    ) if env_by_name
     environments.each do |env|
       return env['deploymentEnvironmentId'] if env['name'] == name
-    end if environments.code = 200
+    end if environments.code == 200
     raise "Unable to find the environment id #{name}\
       - #{resp(environments.code)}" unless environments.code == 200
   end
@@ -148,7 +150,8 @@ action_class do
   def build_by_deploy
     envdeployments = HTTParty.get(
       "#{environmentsapi}/#{env_id}/deployments",
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: { 'Authorization' => "Bearer #{api_token}" }
+    )
     envdeployments['deployments'].each do |d|
       if d['deployment']['build']['status'] == 'success'
         return d['deployment']['build']['version']
@@ -163,9 +166,10 @@ action :start do
   chef_gem 'httparty'
   require 'httparty'
   require 'json'
-  if start_deploy == 200
+  result = start_deploy
+  if result == 200
     Chef::Log.info 'Converged successfully'
   else
-    Chef::Log.error 'Failed to converge'
+    Chef::Log.error "Failed to converge - #{resp(result)}"
   end
 end

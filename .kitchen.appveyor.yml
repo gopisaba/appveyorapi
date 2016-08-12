@@ -1,12 +1,17 @@
 ---
 driver:
-  name: vagrant
+  name: proxy
+  host: localhost
+  reset_command: "exit 0"
+  username: <%= ENV["winrm_user"] %>
+  password: <%= ENV["winrm_pass"] %>
+  port: <%= ENV["winrm_port"] %>
 
 provisioner:
   name: chef_zero
 
 platforms:
-- name: windows-2012r2
+- name: windows-2012R2
 
 verifier:
   name: inspec
