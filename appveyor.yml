@@ -7,8 +7,8 @@ environment:
   winrm_user: test_user
   winrm_pass: Pass@word1
   winrm_port: 5985
-  KITCHEN_YAML: c:\projects\plan-it-chef\.kitchen.appveyor.yml
-  SSL_CERT_FILE: c:\projects\plan-it-chef\certs.pem
+  KITCHEN_YAML: c:\projects\appveyorapi\.kitchen.appveyor.yml
+  SSL_CERT_FILE: c:\projects\appveyorapi\certs.pem
   project_name: appveyorapi
   account: Gopi
   api_token:
@@ -28,7 +28,7 @@ install:
   - ps: ruby --version
   - ps: gem --version
   - ps: gem install bundler --quiet --no-ri --no-rdoc
-  - ps: Invoke-WebRequest -Uri http://curl.haxx.se/ca/cacert.pem -OutFile c:\projects\plan-it-chef\certs.pem
+  - ps: Invoke-WebRequest -Uri http://curl.haxx.se/ca/cacert.pem -OutFile c:\projects\appveyorapi\certs.pem
   - ps: bundler --version
 
 build_script:
