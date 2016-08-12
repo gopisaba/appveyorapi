@@ -11,10 +11,8 @@ environment:
   SSL_CERT_FILE: c:\projects\plan-it-chef\certs.pem
   project_name: appveyorapi
   account: Gopi
-  access_key:
-    secure: bU/mUFZZuPGSD2q1tIcmnPZUMQZ1LKcX0Qy/jtd0DaU=
   api_token:
-    secure: CYXjelgxUPFWQAnUF1YzaTOJnh/xu2mPQRnnKgw9RZM=
+    secure: nuPpGlCRkHII619xXl4GV54xwhKPxAFDweCWF6waC4Q=
 
   matrix:
     - ruby_version: "21"
