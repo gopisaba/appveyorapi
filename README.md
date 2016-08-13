@@ -10,29 +10,19 @@ Initiates the deployment in Appveyor CI tool
 ### Chef
 - Chef 12.5+
 
-## Recipes
-### default  
-Installs the AppVeyor agent
-
-Set the following attributes:
-```
-node['environment_access_key']
-node['deployment_group']
-```
-
 For more examples see the test/fixtures directory
 
 ## Resources and Providers
 ### Agent Install
 ```ruby
 appveyor_agent '3.12.0' do
-  environment_access_key '1234abcd890432kj'
+  access_key '1234abcd890432kj'
   deployment_group 'test'
 end
 ```
 #### Attributes
 - `version` - Specify the Appveyor deployment agent version to be installed like `3.12.0` or say it as `latest`
-- `environment_access_key` - Environment Access Key is a secure string used to pair Deployment agent. Specify the Appveyor environment access key.
+- `access_key` - Environment Access Key is a secure string used to pair Deployment agent. Specify the Appveyor environment access key.
 - `deployment_group` - Deployment group allows matching only specific group of Deployment Agents. Specify the Appveyor deployment group name.
 
 ### Start Deployment
