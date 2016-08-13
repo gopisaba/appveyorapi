@@ -9,8 +9,13 @@ environment:
   winrm_port: 5985
   KITCHEN_YAML: c:\projects\appveyorapi\.kitchen.appveyor.yml
   SSL_CERT_FILE: c:\projects\appveyorapi\certs.pem
-  project_name: appveyorapi
+  project_name: test
+  environment_name: test-production
+  buildversion: 1.0.2
+  deployment_group: test
   account: Gopi
+  access_key:
+    secure: dCESKEbzxmx6H1VF+jjQWq7iQB9vLGqCk6fI+7n2Jbg=
   api_token:
     secure: nuPpGlCRkHII619xXl4GV54xwhKPxAFDweCWF6waC4Q=
 
@@ -19,6 +24,9 @@ environment:
 
 clone_folder: c:\projects\appveyorapi
 clone_depth: 1
+branches:
+  only:
+    - master
 
 install:
   - ps: net user /add $env:winrm_user $env:winrm_pass
@@ -37,3 +45,7 @@ build_script:
 test_script:
   - bundle exec rake style
   - bundle exec kitchen verify
+
+after_build:
+  - berks package appveyorapi.tar.gz
+  - appveyor PushArtifact appveyorapi.tar.gz -FileName appveyorapi-%appveyor_build_version%.tar.gz -DeploymentName appveyorapi

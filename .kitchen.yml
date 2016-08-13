@@ -12,14 +12,41 @@ verifier:
   name: inspec
 
 suites:
-  - name: frontend
+  - name: deploy-last-success
     run_list:
-      - recipe[appveyorapi::default]
+      - recipe[appveyor-deploy-last-success::default]
     attributes:
       appveyor:
+        deployment_group: <%= ENV["deployment_group"] %>
         access_key: <%= ENV["access_key"] %>
         environment_name: <%= ENV["environment_name"] %>
-        project_name: <%= ENV["project_name"] %>
+        project_slug: <%= ENV["project_name"] %>
         account: <%= ENV["account"] %>
         api_token: <%= ENV["api_token"] %>
+        kitchen: <%= true %>
+  - name: deploy-build-version
+    run_list:
+      - recipe[appveyor-deploy-build-version::default]
+    attributes:
+      appveyor:
+        deployment_group: <%= ENV["deployment_group"] %>
+        access_key: <%= ENV["access_key"] %>
+        environment_name: <%= ENV["environment_name"] %>
+        project_slug: <%= ENV["project_name"] %>
+        account: <%= ENV["account"] %>
+        api_token: <%= ENV["api_token"] %>
+        buildversion: <%= ENV["buildversion"] %>
+        kitchen: <%= true %>
+  - name: deploy-latest
+    run_list:
+      - recipe[appveyor-deploy-latest::default]
+    attributes:
+      appveyor:
+        deployment_group: <%= ENV["deployment_group"] %>
+        access_key: <%= ENV["access_key"] %>
+        environment_name: <%= ENV["environment_name"] %>
+        project_slug: <%= ENV["project_name"] %>
+        account: <%= ENV["account"] %>
+        api_token: <%= ENV["api_token"] %>
+        buildversion: <%= ENV["buildversion"] %>
         kitchen: <%= true %>
