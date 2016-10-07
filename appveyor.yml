@@ -18,7 +18,7 @@ environment:
     secure: nuPpGlCRkHII619xXl4GV54xwhKPxAFDweCWF6waC4Q=
 
   matrix:
-    - ruby_version: "21"
+    - ruby_version: "22"
 
 clone_folder: c:\projects\plan-it-chef
 clone_depth: 1
