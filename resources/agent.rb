@@ -20,7 +20,7 @@ resource_name :appveyor_agent
 property :version, String, name_property: true
 property :access_key, String, required: true
 property :deployment_group, required: true
-property :installer_url, String, default: lazy { "http://www.appveyor.com/downloads/deployment-agent/#{version}/AppveyorDeploymentAgent.msi" }
+property :installer_url, String, default: lazy { "https://www.appveyor.com/downloads/deployment-agent/#{version}/AppveyorDeploymentAgent.msi" }
 property :install_path, String, default: lazy { 'C:\\Program Files (x86)\\AppVeyor\\DeploymentAgent\\Appveyor.DeploymentAgent.Service.exe' }
 
 default_action :install
