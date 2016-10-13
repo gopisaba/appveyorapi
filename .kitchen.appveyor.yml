@@ -17,39 +17,40 @@ verifier:
   name: inspec
 
 suites:
-  - name: frontend
+  - name: appveyor-agent-3-12
     run_list:
-      - recipe[clickandcollect-chef::frontend]
+      - recipe[appveyor-agent-3-12-0::default]
     attributes:
       appveyor:
         access_key: <%= ENV["access_key"] %>
-        environment_name: <%= ENV["environment_name"] %>
-        project_name: <%= ENV["project_name"] %>
-        account: <%= ENV["account"] %>
-        api_token: <%= ENV["api_token"] %>
-        group: 'frontend'
-        kitchen: <%= true %>
-  - name: backend
+  - name: appveyor-agent-latest
     run_list:
-      - recipe[clickandcollect-chef::backend]
+      - recipe[appveyor-agent-latest::default]
     attributes:
       appveyor:
         access_key: <%= ENV["access_key"] %>
-        environment_name: <%= ENV["environment_name"] %>
-        project_name: <%= ENV["project_name"] %>
-        account: <%= ENV["account"] %>
-        api_token: <%= ENV["api_token"] %>
-        group: 'backend'
-        kitchen: <%= true %>
-  - name: database_ci
+  - name: appveyor-deploy-latest
     run_list:
-      - recipe[clickandcollect-chef::database_ci]
+      - recipe[appveyor-deploy-latest::default]
     attributes:
       appveyor:
         access_key: <%= ENV["access_key"] %>
-        environment_name: <%= ENV["environment_name"] %>
-        project_name: <%= ENV["project_name"] %>
         account: <%= ENV["account"] %>
         api_token: <%= ENV["api_token"] %>
-        group: 'database_ci'
-        kitchen: <%= true %>
+  - name: appveyor-deploy-last-success
+    run_list:
+      - recipe[appveyor-deploy-last-success::default]
+    attributes:
+      appveyor:
+        access_key: <%= ENV["access_key"] %>
+        account: <%= ENV["account"] %>
+        api_token: <%= ENV["api_token"] %>
+  - name: appveyor-deploy-build-version
+    run_list:
+      - recipe[appveyor-deploy-build-version::default]
+    attributes:
+      appveyor:
+        access_key: <%= ENV["access_key"] %>
+        account: <%= ENV["account"] %>
+        api_token: <%= ENV["api_token"] %>
+        buildversion: '1.0.2'
