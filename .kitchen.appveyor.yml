@@ -17,12 +17,35 @@ verifier:
   name: inspec
 
 suites:
-  - name: appveyor-deploy
+  - name: appveyor-agent-3-12
     run_list:
-      - recipe[appveyorapi::default]
+      - recipe[appveyor-agent-3-12-0::default]
     attributes:
-      api_token: <%= ENV['API_TOKEN'] %>
-      environment_access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>
-      name: <%= ENV['ENV_NAME'] %>
-      project: <%= ENV['PROJECT'] %>
-      account: <%= ENV['ACCOUNT'] %>
+      environment_access_key: <%= ENV["access_key"] %>
+  - name: appveyor-agent-latest
+    run_list:
+      - recipe[appveyor-agent-latest::default]
+    attributes:
+      environment_access_key: <%= ENV["access_key"] %>
+  - name: appveyor-deploy-latest
+    run_list:
+      - recipe[appveyor-deploy-latest::default]
+    attributes:
+      environment_access_key: <%= ENV["access_key"] %>
+      account: <%= ENV["account"] %>
+      api_token: <%= ENV["api_token"] %>
+  - name: appveyor-deploy-last-success
+    run_list:
+      - recipe[appveyor-deploy-last-success::default]
+    attributes:
+      environment_access_key: <%= ENV["access_key"] %>
+      account: <%= ENV["account"] %>
+      api_token: <%= ENV["api_token"] %>
+  - name: appveyor-deploy-build-version
+    run_list:
+      - recipe[appveyor-deploy-build-version::default]
+    attributes:
+      environment_access_key: <%= ENV["access_key"] %>
+      account: <%= ENV["account"] %>
+      api_token: <%= ENV["api_token"] %>
+      buildversion: '1.0.2'

@@ -16,8 +16,8 @@ suites:
     run_list:
       - recipe[appveyorapi::default]
     attributes:
-      api_token: <%= ENV['API_TOKEN'] %>
-      environment_access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>
-      name: <%= ENV['ENV_NAME'] %>
-      project: <%= ENV['PROJECT'] %>
-      account: <%= ENV['ACCOUNT'] %>
+      api_token: <%= ENV["api_token"] %>
+      environment_access_key: <%= ENV["access_key"] %>
+      name: <%= ENV["environment_name"] %>
+      project: <%= ENV["project_name"] %>
+      account: <%= ENV["account"] %>

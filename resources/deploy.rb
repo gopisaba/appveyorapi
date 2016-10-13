@@ -42,7 +42,6 @@ action_class do
     JSON.parse(body)
   end
 
-  # rubocop:disable MethodLength
   def start_deploy_json
     parsed = start_deploy_body
     parsed['environmentName'] = env_by_name
@@ -57,7 +56,6 @@ action_class do
                              end
     parsed
   end
-  # rubocop:enable MethodLength
 
   def start_deploy
     json = start_deploy_json
@@ -66,16 +64,19 @@ action_class do
       body: json.to_json,
       headers: {
         'Authorization' => "Bearer #{api_token}",
-        'Content-Type' => 'application/json',
-        'Accept' => 'application/json' },
-      debug_output: $stdout)
+        'Content-Type' => 'application/json', 'Accept' => 'application/json'
+      }, debug_output: $stdout
+    )
     response.code
   end
 
   def build_by_version
     response = HTTParty.get(
       "#{$projectsapi}/#{account}/#{project}/build/#{buildversion}",
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: {
+        'Authorization' => "Bearer #{api_token}"
+      }
+    )
     raise "Build number #{buildversion} not found" unless response.code == 200
     response['build']['version']
   end
@@ -83,7 +84,10 @@ action_class do
   def build_latest_version
     response = HTTParty.get(
       "#{$projectsapi}/#{account}/#{project}",
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: {
+        'Authorization' => "Bearer #{api_token}"
+      }
+    )
     raise 'Unable to find the latest Build number' unless response.code == 200
     response['build']['version']
   end
@@ -91,11 +95,12 @@ action_class do
   def project_by_name
     projects = HTTParty.get(
       $projectsapi,
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: {
+        'Authorization' => "Bearer #{api_token}"
+      }
+    )
     response = false
-    projects.each do |proj|
-      response = true if proj['name'] == project
-    end
+    projects.each { |proj| response = true if proj['name'] == project }
     raise "Unable to find the project #{project}" unless response == true
     project
   end
@@ -103,11 +108,12 @@ action_class do
   def env_by_name
     environments = HTTParty.get(
       $environmentsapi,
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: {
+        'Authorization' => "Bearer #{api_token}"
+      }
+    )
     response = false
-    environments.each do |env|
-      response = true if env['name'] == name
-    end
+    environments.each { |env| response = true if env['name'] == name }
     raise "Unable to find the environment #{name}" unless response == true
     name
   end
@@ -115,20 +121,23 @@ action_class do
   def env_id
     environments = HTTParty.get(
       $environmentsapi,
-      headers: { 'Authorization' => "Bearer #{api_token}" }) if env_by_name
-    environments.each do |env|
-      return env['deploymentEnvironmentId'] if env['name'] == name
-    end
+      headers: {
+        'Authorization' => "Bearer #{api_token}"
+      }
+    ) if env_by_name
+    environments.each { |env| return env['deploymentEnvironmentId'] if env['name'] == name }
   end
 
   def build_by_deploy
     envdeployments = HTTParty.get(
       "#{$environmentsapi}/#{env_id}/deployments",
-      headers: { 'Authorization' => "Bearer #{api_token}" })
+      headers: {
+        'Authorization' => "Bearer #{api_token}"
+      }
+    )
     envdeployments['deployments'].each do |d|
-      if d['deployment']['build']['status'] == 'success'
-        return d['deployment']['build']['version']
-      end
+      return d['deployment']['build']['version'] if
+        d['deployment']['build']['status'] == 'success'
     end
   end
 end
