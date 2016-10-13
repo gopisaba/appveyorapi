@@ -4,6 +4,7 @@ require 'rspec/core/rake_task'
 # Style tests. Rubocop and Foodcritic
 namespace :style do
   begin
+    require 'cookstyle'
     require 'rubocop/rake_task'
     desc 'Run Ruby style checks'
     RuboCop::RakeTask.new(:ruby)

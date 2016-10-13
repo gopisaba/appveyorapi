@@ -7,7 +7,8 @@ gem 'stove', '~> 3.2'
 group :test do
   gem 'chefspec', '~> 4.4'
   gem 'foodcritic', '~> 5.0'
-  gem 'rubocop', '~> 0.39'
+  gem 'rubocop', '~> 0.34'
+  gem 'cookstyle'
 end
 
 group :integration do

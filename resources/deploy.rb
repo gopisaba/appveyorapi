@@ -42,7 +42,6 @@ action_class do
     JSON.parse(body)
   end
 
-  # rubocop:disable MethodLength
   def start_deploy_json
     parsed = start_deploy_body
     parsed['environmentName'] = env_by_name
@@ -57,7 +56,6 @@ action_class do
                              end
     parsed
   end
-  # rubocop:enable MethodLength
 
   def start_deploy
     json = start_deploy_json
