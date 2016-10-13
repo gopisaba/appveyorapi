@@ -21,36 +21,31 @@ suites:
     run_list:
       - recipe[appveyor-agent-3-12-0::default]
     attributes:
-      appveyor:
-        access_key: <%= ENV["access_key"] %>
+      environment_access_key: <%= ENV["access_key"] %>
   - name: appveyor-agent-latest
     run_list:
       - recipe[appveyor-agent-latest::default]
     attributes:
-      appveyor:
-        access_key: <%= ENV["access_key"] %>
+      environment_access_key: <%= ENV["access_key"] %>
   - name: appveyor-deploy-latest
     run_list:
       - recipe[appveyor-deploy-latest::default]
     attributes:
-      appveyor:
-        access_key: <%= ENV["access_key"] %>
-        account: <%= ENV["account"] %>
-        api_token: <%= ENV["api_token"] %>
+      environment_access_key: <%= ENV["access_key"] %>
+      account: <%= ENV["account"] %>
+      api_token: <%= ENV["api_token"] %>
   - name: appveyor-deploy-last-success
     run_list:
       - recipe[appveyor-deploy-last-success::default]
     attributes:
-      appveyor:
-        access_key: <%= ENV["access_key"] %>
-        account: <%= ENV["account"] %>
-        api_token: <%= ENV["api_token"] %>
+      environment_access_key: <%= ENV["access_key"] %>
+      account: <%= ENV["account"] %>
+      api_token: <%= ENV["api_token"] %>
   - name: appveyor-deploy-build-version
     run_list:
       - recipe[appveyor-deploy-build-version::default]
     attributes:
-      appveyor:
-        access_key: <%= ENV["access_key"] %>
-        account: <%= ENV["account"] %>
-        api_token: <%= ENV["api_token"] %>
-        buildversion: '1.0.2'
+      environment_access_key: <%= ENV["access_key"] %>
+      account: <%= ENV["account"] %>
+      api_token: <%= ENV["api_token"] %>
+      buildversion: '1.0.2'
