@@ -17,12 +17,39 @@ verifier:
   name: inspec
 
 suites:
-  - name: appveyor-deploy
+  - name: frontend
     run_list:
-      - recipe[appveyorapi::default]
+      - recipe[clickandcollect-chef::frontend]
     attributes:
-      api_token: <%= ENV['API_TOKEN'] %>
-      environment_access_key: <%= ENV['ENVIRONMENT_ACCESS_KEY'] %>
-      name: <%= ENV['ENV_NAME'] %>
-      project: <%= ENV['PROJECT'] %>
-      account: <%= ENV['ACCOUNT'] %>
+      appveyor:
+        access_key: <%= ENV["access_key"] %>
+        environment_name: <%= ENV["environment_name"] %>
+        project_name: <%= ENV["project_name"] %>
+        account: <%= ENV["account"] %>
+        api_token: <%= ENV["api_token"] %>
+        group: 'frontend'
+        kitchen: <%= true %>
+  - name: backend
+    run_list:
+      - recipe[clickandcollect-chef::backend]
+    attributes:
+      appveyor:
+        access_key: <%= ENV["access_key"] %>
+        environment_name: <%= ENV["environment_name"] %>
+        project_name: <%= ENV["project_name"] %>
+        account: <%= ENV["account"] %>
+        api_token: <%= ENV["api_token"] %>
+        group: 'backend'
+        kitchen: <%= true %>
+  - name: database_ci
+    run_list:
+      - recipe[clickandcollect-chef::database_ci]
+    attributes:
+      appveyor:
+        access_key: <%= ENV["access_key"] %>
+        environment_name: <%= ENV["environment_name"] %>
+        project_name: <%= ENV["project_name"] %>
+        account: <%= ENV["account"] %>
+        api_token: <%= ENV["api_token"] %>
+        group: 'database_ci'
+        kitchen: <%= true %>
